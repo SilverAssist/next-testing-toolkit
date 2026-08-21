@@ -30,6 +30,7 @@ src/
 │   ├── generate.ts      # writes the fixture app
 │   └── build.ts         # build → pack → install → next build
 ├── ignore-patterns.ts   # globs consuming repos must exclude from lint/format
+├── index.ts             # root barrel (the "." entry point)
 ├── playwright.ts        # definePackageFixtureConfig
 ├── types.ts             # shared types
 └── __tests__/           # node:test suites
