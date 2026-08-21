@@ -30,6 +30,7 @@ src/
 │   ├── generate.ts      # writes the fixture app
 │   └── build.ts         # build → pack → install → next build
 ├── ignore-patterns.ts   # globs consuming repos must exclude from lint/format
+├── index.ts             # root barrel (the "." entry point)
 ├── playwright.ts        # definePackageFixtureConfig
 ├── types.ts             # shared types
 └── __tests__/           # node:test suites
@@ -82,5 +83,31 @@ _calling_ workflow's name rather than the one containing the publish.
 1. Bump the version and update the changelog.
 2. Merge to `main`.
 3. Create a GitHub release — the workflow publishes it.
+
+### The first publish of a new package cannot use OIDC
+
+npm will not let you configure a trusted publisher for a package that does not exist
+yet, so there is a bootstrap step no repo can automate away. It applies to every new
+package, not just this one:
+
+1. Create the GitHub release as usual. `publish.yml` fires and **fails** at `npm
+publish` — expected, there is no trusted publisher yet. Nothing partial reaches npm;
+   the steps before it are only checkout, install, typecheck and build.
+2. `npm login` and `npm publish` by hand — an interactive login, so no token is created
+   or stored.
+3. _Then_ register the trusted publisher on npmjs.com, which is only possible once the
+   package exists. It is two steps: the entry, and the separate **Set up connection**
+   button. Missing the second produces an E404 on the next publish that looks nothing
+   like a configuration error.
+
+The release leaves one failed run in the history. **Do not try to avoid it by disabling
+`publish.yml` around the release.** Either order produces a failed run anyway — publish
+first and the workflow fails on a version conflict instead — and disabling adds a state
+you have to remember to restore. Forgetting `gh workflow enable` means every later
+release silently publishes nothing, which is a far worse failure than a red run that is
+loud, immediate and harmless.
+
+That first version ships without provenance attestation, since provenance requires a
+supported CI. Every later version has it.
 
 **An npm version cannot be taken back.** Run the packaging checks first.
