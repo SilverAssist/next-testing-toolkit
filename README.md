@@ -150,7 +150,34 @@ import { ESLINT_IGNORE_PATTERNS } from "@silverassist/next-testing-toolkit";
 export default [{ ignores: [...ESLINT_IGNORE_PATTERNS] } /* … */];
 ```
 
-`IGNORE_PATHS` is the plain-path equivalent for `.gitignore` and `.prettierignore`.
+The harness also _generates_ several fixture files — `layout.tsx`, `next.config.mjs`,
+`tsconfig.json`, `next-env.d.ts` and the fixture `package.json`. Those are excluded too:
+this package writes them, but each consumer would lint them against its own Prettier
+config, so any formatting choice made here fails somewhere. `e2e/fixture/app/page.tsx` is
+deliberately **not** excluded — that one is hand-written per package and is the file most
+worth linting.
+
+`IGNORE_PATHS` is the plain-path equivalent for `.gitignore` and `.prettierignore`. Those
+are plain-text files and cannot import a constant, so the paths have to be copied in:
+
+```text
+# --- next-testing-toolkit (generated fixture files) ---
+dist
+coverage
+e2e/fixture/node_modules
+e2e/fixture/.next
+e2e/fixture/package-lock.json
+e2e/fixture/app/layout.tsx
+e2e/fixture/next.config.mjs
+e2e/fixture/next-env.d.ts
+e2e/fixture/tsconfig.json
+e2e/fixture/package.json
+test-results
+playwright-report
+```
+
+That copy is the one place this package cannot keep in sync for you — if a release adds a
+generated file, `IGNORE_PATHS` picks it up but `.prettierignore` will not.
 
 ## Notes
 

@@ -10,6 +10,12 @@
  * only noise (`'require' is not defined`, `'exports' is not defined`) — this
  * package's own repo hit exactly that before adding it.
  *
+ * The fixture's *generated* files are excluded for a different reason: this
+ * package writes them, but each consumer lints them against its own Prettier
+ * config, so any formatting choice made here fails somewhere. `app/page.tsx`
+ * is deliberately NOT excluded — that one is hand-written per package and is
+ * the file most worth linting.
+ *
  * @packageDocumentation
  */
 
@@ -19,6 +25,11 @@ export const ESLINT_IGNORE_PATTERNS: readonly string[] = [
   "coverage/**",
   "e2e/fixture/node_modules/**",
   "e2e/fixture/.next/**",
+  "e2e/fixture/app/layout.tsx",
+  "e2e/fixture/next.config.mjs",
+  "e2e/fixture/next-env.d.ts",
+  "e2e/fixture/tsconfig.json",
+  "e2e/fixture/package.json",
 ];
 
 /** Patterns for `.prettierignore` and `.gitignore`. */
@@ -28,6 +39,11 @@ export const IGNORE_PATHS: readonly string[] = [
   "e2e/fixture/node_modules",
   "e2e/fixture/.next",
   "e2e/fixture/package-lock.json",
+  "e2e/fixture/app/layout.tsx",
+  "e2e/fixture/next.config.mjs",
+  "e2e/fixture/next-env.d.ts",
+  "e2e/fixture/tsconfig.json",
+  "e2e/fixture/package.json",
   "test-results",
   "playwright-report",
 ];

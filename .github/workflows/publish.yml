@@ -14,21 +14,21 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
-      
+
       - uses: actions/setup-node@v7
         with:
           # Node 24 ships npm 11.x; trusted publishing needs npm >= 11.5.1.
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
           # npm's trusted-publishing guide: never cache in release builds.
           package-manager-cache: false
-      
+
       - run: npm ci
-      
+
       - run: npm run typecheck
-      
+
       - run: npm run build
-      
+
       # Recorded so a publish failure can be diagnosed without a re-run.
       - name: Report npm version
         run: npm --version
@@ -36,7 +36,7 @@ jobs:
       # No NODE_AUTH_TOKEN: auth is the OIDC token above, exchanged against the
       # trusted publisher registered for this package on npmjs.com.
       - run: npm publish
-      
+
       - name: Create summary
         if: success()
         run: |
