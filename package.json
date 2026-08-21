@@ -25,7 +25,7 @@
     "node": ">=22.0.0"
   },
   "bin": {
-    "next-testing-toolkit": "./dist/cli.js"
+    "next-testing-toolkit": "dist/cli.js"
   },
   "types": "./dist/index.d.ts",
   "exports": {
