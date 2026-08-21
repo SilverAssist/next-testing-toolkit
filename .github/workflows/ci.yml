@@ -1,0 +1,73 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    # publish.yml builds and releases on Node 24; testing only on the floor of
+    # the supported range would ship an artifact built on a version CI never
+    # exercised.
+    name: Code Quality (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 22.18 is the floor, not 22.0: `node --test` runs the suite's .ts files
+        # through native type stripping, which is only on by default from 22.18.
+        node: ['22.18', '24.x']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build package
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Verify packaging
+        # This package exists to catch packaging defects in other packages, so
+        # it has no excuse for shipping one of its own. `publint` reads the
+        # packed tarball; `attw` checks the types resolve in every module mode.
+        run: |
+          npm pack --silent
+          npx --yes publint@latest
+          npx --yes @arethetypeswrong/cli@latest --pack .
+
+      - name: Create summary
+        if: success()
+        run: |
+          echo "## ✅ All Quality Checks Passed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Code formatting (Prettier)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Linting (ESLint)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Type checking (TypeScript)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build successful" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Packaging verified (publint + attw)" >> $GITHUB_STEP_SUMMARY

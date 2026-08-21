@@ -1,0 +1,55 @@
+name: Publish Package to npm
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Lets the runner mint the OIDC token npm exchanges for publish rights.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      
+      - uses: actions/setup-node@v7
+        with:
+          # Node 24 ships npm 11.x; trusted publishing needs npm >= 11.5.1.
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          # npm's trusted-publishing guide: never cache in release builds.
+          package-manager-cache: false
+      
+      - run: npm ci
+      
+      - run: npm run typecheck
+      
+      - run: npm run build
+      
+      # Recorded so a publish failure can be diagnosed without a re-run.
+      - name: Report npm version
+        run: npm --version
+
+      # No NODE_AUTH_TOKEN: auth is the OIDC token above, exchanged against the
+      # trusted publisher registered for this package on npmjs.com.
+      - run: npm publish
+      
+      - name: Create summary
+        if: success()
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "## 📦 Package Published Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`$PACKAGE_VERSION\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [View on npm](https://www.npmjs.com/package/@silverassist/next-testing-toolkit/v/$PACKAGE_VERSION)" >> $GITHUB_STEP_SUMMARY
+          echo "- [npm package page](https://www.npmjs.com/package/@silverassist/next-testing-toolkit)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 Install" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npm install @silverassist/next-testing-toolkit@$PACKAGE_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

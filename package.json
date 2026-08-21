@@ -1,0 +1,93 @@
+{
+  "name": "@silverassist/next-testing-toolkit",
+  "version": "0.1.0",
+  "description": "Integration-testing harness for npm packages consumed by Next.js apps: builds a fixture app around the packed tarball and asserts the React Server Components boundary.",
+  "keywords": [
+    "nextjs",
+    "testing",
+    "playwright",
+    "react-server-components",
+    "packaging"
+  ],
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "bin": {
+    "next-testing-toolkit": "./dist/cli.js"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./assertions": {
+      "import": {
+        "types": "./dist/assertions.d.ts",
+        "default": "./dist/assertions.js"
+      },
+      "require": {
+        "types": "./dist/assertions.d.cts",
+        "default": "./dist/assertions.cjs"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "assertions": [
+        "./dist/assertions.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test src/__tests__/*.test.ts",
+    "check": "npm run format:check && npm run typecheck && npm run lint && npm run build && npm run test",
+    "prepare": "husky || true"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^24",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
+    "tsdown": "^0.22.14",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.67.0"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "lint-staged": {
+    "*.{ts,js,mjs,json,md}": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "eslint --fix"
+    ]
+  }
+}
