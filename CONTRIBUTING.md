@@ -84,4 +84,23 @@ _calling_ workflow's name rather than the one containing the publish.
 2. Merge to `main`.
 3. Create a GitHub release — the workflow publishes it.
 
+### The first publish of a new package cannot use OIDC
+
+npm will not let you configure a trusted publisher for a package that does not exist
+yet, so there is a bootstrap step no repo can automate away. It applies to every new
+package, not just this one:
+
+1. `npm login` and `npm publish` by hand — an interactive login, so no token is created
+   or stored.
+2. _Then_ register the trusted publisher on npmjs.com, which is only possible once the
+   package exists. It is two steps: the entry, and the separate **Set up connection**
+   button. Missing the second produces an E404 on the next publish that looks nothing
+   like a configuration error.
+3. Disable `publish.yml` while creating that first GitHub release. The version is
+   already on npm, so letting the workflow run would fail on a version conflict and
+   leave a permanent red run in the repo's history.
+
+That first version ships without provenance attestation, since provenance requires a
+supported CI. Every later version has it.
+
 **An npm version cannot be taken back.** Run the packaging checks first.
