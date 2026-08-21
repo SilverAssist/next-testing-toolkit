@@ -1,6 +1,6 @@
 {
   "name": "@silverassist/next-testing-toolkit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Integration-testing harness for npm packages consumed by Next.js apps: builds a fixture app around the packed tarball and asserts the React Server Components boundary.",
   "keywords": [
     "nextjs",

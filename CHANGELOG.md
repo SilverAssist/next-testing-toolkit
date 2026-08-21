@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-08-21
+
+First release published through the workflow rather than by hand, which is what
+this version exists to exercise: `0.1.0` had to be published locally because npm
+will not configure a trusted publisher for a package that does not exist yet.
+
+### Changed
+
+- `bin` is written as `dist/cli.js` rather than `./dist/cli.js`. npm normalizes the
+  path at publish time and warns `"bin[next-testing-toolkit]" script name dist/cli.js
+was invalid and removed` — misleading wording, since nothing is removed: the
+  normalizer assigns the corrected value on the line after the warning. The published
+  `package.json` is identical either way; this only silences the noise.
+
 ## [0.1.0] - 2026-08-21
 
 First release. Extracts the integration-testing setup validated across
@@ -39,4 +53,5 @@ into a reusable harness.
   `"type": "module"` — an ESM-only build made that config unloadable.
 - Published with **npm trusted publishing (OIDC)**; no npm token exists in this repo.
 
+[0.2.0]: https://github.com/SilverAssist/next-testing-toolkit/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SilverAssist/next-testing-toolkit/releases/tag/v0.1.0
