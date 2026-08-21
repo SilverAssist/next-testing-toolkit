@@ -10,6 +10,15 @@
     "packaging"
   ],
   "license": "PolyForm-Noncommercial-1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SilverAssist/next-testing-toolkit.git"
+  },
+  "homepage": "https://github.com/SilverAssist/next-testing-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/SilverAssist/next-testing-toolkit/issues"
+  },
+  "author": "Miguel Colmenares <me@miguelcolmenares.com>",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -51,8 +60,12 @@
   "files": [
     "dist",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
