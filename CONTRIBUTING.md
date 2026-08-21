@@ -90,15 +90,22 @@ npm will not let you configure a trusted publisher for a package that does not e
 yet, so there is a bootstrap step no repo can automate away. It applies to every new
 package, not just this one:
 
-1. `npm login` and `npm publish` by hand — an interactive login, so no token is created
+1. Create the GitHub release as usual. `publish.yml` fires and **fails** at `npm
+publish` — expected, there is no trusted publisher yet. Nothing partial reaches npm;
+   the steps before it are only checkout, install, typecheck and build.
+2. `npm login` and `npm publish` by hand — an interactive login, so no token is created
    or stored.
-2. _Then_ register the trusted publisher on npmjs.com, which is only possible once the
+3. _Then_ register the trusted publisher on npmjs.com, which is only possible once the
    package exists. It is two steps: the entry, and the separate **Set up connection**
    button. Missing the second produces an E404 on the next publish that looks nothing
    like a configuration error.
-3. Disable `publish.yml` while creating that first GitHub release. The version is
-   already on npm, so letting the workflow run would fail on a version conflict and
-   leave a permanent red run in the repo's history.
+
+The release leaves one failed run in the history. **Do not try to avoid it by disabling
+`publish.yml` around the release.** Either order produces a failed run anyway — publish
+first and the workflow fails on a version conflict instead — and disabling adds a state
+you have to remember to restore. Forgetting `gh workflow enable` means every later
+release silently publishes nothing, which is a far worse failure than a red run that is
+loud, immediate and harmless.
 
 That first version ships without provenance attestation, since provenance requires a
 supported CI. Every later version has it.
