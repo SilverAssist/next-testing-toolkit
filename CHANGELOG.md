@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-08-24
+
+### Fixed
+
+- **TypeScript major bumps broke `npm install` on release day** — `typescript-eslint` doesn't support a new TS major until some time after it ships, causing an ERESOLVE peer-dependency conflict. Added a Dependabot ignore rule for TypeScript major bumps, matching the fix already applied in `icons` (upstream: typescript-eslint/typescript-eslint#10940).
+
+### Changed
+
+- Bumped `@types/node` from 24.13.3 to 26.2.0.
+
 ## [0.2.0] - 2026-08-21
 
 First release published through the workflow rather than by hand, which is what
