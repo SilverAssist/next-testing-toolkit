@@ -26,8 +26,11 @@ Three of the four are **packaging** defects, and three of the four are caught by
 
 ```bash
 npm install -D @silverassist/next-testing-toolkit @playwright/test
-npx playwright install chromium
+npx playwright install --with-deps chromium
 ```
+
+`--with-deps` matters on CI: a bare runner needs the browser's system libraries, and the
+download alone is not enough. Locally you can drop it if the libraries are already there.
 
 Requires Node >= 22.
 
@@ -189,6 +192,19 @@ right URL, and does the value reach the element a Server Action reads?
 share no specs, helpers or fixtures with those repos, so the consistency argument does not
 reach them. Playwright's `webServer` starts and stops the fixture itself, removing the
 `start-server-and-test` dependency the Cypress path needs.
+
+**Chromium only.** Next's Playwright guide describes driving Chromium, Firefox and WebKit,
+which is the right default for an _app_ — cross-browser rendering is part of what an app
+promises. A fixture is not testing rendering: it tests that the tarball resolves, that
+Server Component boundaries hold, and that a value reaches a Server Action. Three of the
+four defects above are caught by `next build` alone, no browser involved. A second and
+third engine would triple CI time to re-verify a module graph that cannot vary by engine.
+
+**The generated config already follows Next's guidance** — `next start` against the
+production build rather than `next dev`, a `baseURL` so specs use `page.goto("/")`, and
+`reuseExistingServer` off in CI. It binds `127.0.0.1` rather than `localhost` because
+`localhost` can resolve to IPv6 while the server binds IPv4, which surfaces as an
+unhelpful "This page couldn't load" while `curl` succeeds.
 
 **Pair it with packaging checks** — cheap, and they find real defects:
 
