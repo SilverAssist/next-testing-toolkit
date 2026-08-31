@@ -9,18 +9,18 @@ would actually publish.
 
 ## Why it exists
 
-Four defects reached npm undetected before this harness existed. None was visible to a
-unit test:
+A unit test importing from `src/` is structurally blind to defects that only exist in
+the **published artifact** — the kind of thing this harness catches:
 
-| Package               | Defect                                                                         | Only visible when                           |
-| --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------- |
-| `consent-banner`      | Shipped with **no `"use client"` at all**, for its entire published life       | a Server Component imports the _built_ file |
-| `performance-toolkit` | `exports` pointed all 8 subpaths at `.mjs` files the build never produced      | Node resolves the _published tarball_       |
-| `recaptcha`           | Root barrel threw in Server Components — the bundler inlined the client module | a Server Component imports it               |
-| `recaptcha` in an app | Token never reached the Server Action                                          | a real form submission                      |
+| Defect class                                                 | Only visible when                           |
+| ------------------------------------------------------------ | ------------------------------------------- |
+| A client component missing `"use client"`                    | a Server Component imports the _built_ file |
+| An `exports` map pointing at files the build never produced  | Node resolves the _published tarball_       |
+| A bundler inlining a client module into a server-safe barrel | a Server Component imports it               |
+| A value that never reaches its destination end-to-end        | a real form submission / user interaction   |
 
-Three of the four are **packaging** defects, and three of the four are caught by
-`next build` alone — no browser needed.
+Most of these are **packaging** defects, and most are caught by `next build` alone —
+no browser needed.
 
 ## Install
 
