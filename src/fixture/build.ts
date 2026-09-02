@@ -26,6 +26,26 @@ function run(command: string, args: string[], cwd: string): string {
 }
 
 /**
+ * Reads the packed tarball's filename out of `npm pack --json` output.
+ *
+ * The shape differs across npm majors: an array of manifests up to npm 11, an
+ * object keyed by package name from npm 12. Extracted on its own so this
+ * normalization can be tested without shelling out to a real `npm pack`.
+ *
+ * @param raw - The raw stdout of `npm pack --json --ignore-scripts`.
+ */
+export function packedTarballFilename(raw: string): string {
+  const packed = JSON.parse(raw) as unknown;
+  const manifest = (Array.isArray(packed) ? packed[0] : Object.values(packed as object)[0]) as
+    { filename?: string } | undefined;
+
+  if (!manifest?.filename) {
+    throw new Error("Could not read a filename from `npm pack --json`");
+  }
+  return manifest.filename;
+}
+
+/**
  * Builds the package, packs it, installs the tarball into the fixture, and
  * runs `next build`.
  *
@@ -42,20 +62,12 @@ export function buildFixture(fixture: ResolvedFixture, options: FixtureOptions):
   run("npm", ["run", "build"], packageRoot);
 
   console.log("→ Packing");
-  // `npm pack --json` shape differs across npm majors: an array of manifests
-  // up to npm 11, an object keyed by package name from npm 12. Normalize.
-  const packed = JSON.parse(
+  const filename = packedTarballFilename(
     run("npm", ["pack", "--json", "--ignore-scripts"], packageRoot)
-  ) as unknown;
-  const manifest = (Array.isArray(packed) ? packed[0] : Object.values(packed as object)[0]) as
-    { filename?: string } | undefined;
+  );
+  const tarball = join(packageRoot, filename);
 
-  if (!manifest?.filename) {
-    throw new Error("Could not read a filename from `npm pack --json`");
-  }
-  const tarball = join(packageRoot, manifest.filename);
-
-  console.log(`→ Installing ${manifest.filename} into the fixture`);
+  console.log(`→ Installing ${filename} into the fixture`);
   // A stale install would silently test the previous build.
   for (const stale of ["node_modules", ".next", "package-lock.json"]) {
     rmSync(join(fixtureDir, stale), { recursive: true, force: true });

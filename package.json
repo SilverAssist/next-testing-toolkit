@@ -75,7 +75,9 @@
     "test": "node --test src/__tests__/*.test.ts",
     "check": "npm run format:check && npm run typecheck && npm run lint && npm run build && npm run test",
     "prepublishOnly": "npm run check",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "e2e:setup": "npm run build && node dist/cli.js build-fixture --port 3220",
+    "e2e": "npm run e2e:setup && playwright test -c e2e/playwright.config.ts"
   },
   "peerDependencies": {
     "@playwright/test": ">=1.40.0"
