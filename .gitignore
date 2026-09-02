@@ -29,3 +29,19 @@ Thumbs.db
 logs/
 *.log
 npm-debug.log*
+
+# e2e fixture artifacts
+e2e/fixture/node_modules/
+e2e/fixture/.next/
+e2e/fixture/package-lock.json
+test-results/
+playwright-report/
+
+# --- next-testing-toolkit (generated fixture files) ---
+# The harness regenerates these on every run; only app/page.tsx is authored.
+# Kept in sync with this repo's own IGNORE_PATHS (src/ignore-patterns.ts).
+e2e/fixture/app/layout.tsx
+e2e/fixture/next.config.mjs
+e2e/fixture/next-env.d.ts
+e2e/fixture/tsconfig.json
+e2e/fixture/package.json
