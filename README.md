@@ -217,3 +217,7 @@ unhelpful "This page couldn't load" while `curl` succeeds.
 ## License
 
 [PolyForm Noncommercial 1.0.0](./LICENSE)
+
+---
+
+Made with ❤️ by Silver Assist
